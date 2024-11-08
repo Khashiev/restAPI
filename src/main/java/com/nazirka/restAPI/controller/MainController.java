@@ -1,49 +1,46 @@
 package com.nazirka.restAPI.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nazirka.restAPI.entity.Cat;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.nazirka.restAPI.repository.CatRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@Slf4j
 @RestController
+@RequiredArgsConstructor
 public class MainController {
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final CatRepository catRepository;
 
-    @GetMapping("/api/main")
-    public String mainListener() {
-        return "Hello World";
+    @PostMapping("/api/add")
+    public void addCat(@RequestBody Cat cat) {
+        log.info("Add cat " + catRepository.save(cat));
     }
 
-    @GetMapping("/api/cat")
-    public String giveCat() {
-        Cat cat = new Cat("Barsik", 5, 10);
-        String json = null;
-
-        try {
-            json = objectMapper.writeValueAsString(cat);
-        } catch (JsonProcessingException e) {
-            System.out.println("Json Exception");
-        }
-
-        return json;
+    @SneakyThrows
+    @GetMapping("/api/all")
+    public List<Cat> getAll() {
+        return catRepository.findAll();
     }
 
-    @PostMapping("/api/special")
-    public String giveSpecialCat(@RequestParam String name) {
-        Cat cat = new Cat(name, 5, 10);
-        String json = null;
+    @GetMapping("/api")
+    public Cat getCat(@RequestParam int id) {
+        return catRepository.findById(id).orElseThrow();
+    }
 
-        try {
-            json = objectMapper.writeValueAsString(cat);
-        } catch (JsonProcessingException e) {
-            System.out.println("Json Exception");
+    @DeleteMapping("/api")
+    public void deleteCat(@RequestParam int id) {
+        catRepository.deleteById(id);
+    }
+
+    @PutMapping("/api/add")
+    public String changeCat(@RequestBody Cat cat) {
+        if (!catRepository.existsById(cat.getId())) {
+            return "No such cat";
         }
-
-        return json;
+        return catRepository.save(cat).toString();
     }
 }
