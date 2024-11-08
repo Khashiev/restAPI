@@ -1,6 +1,8 @@
 package com.nazirka.restAPI.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,8 +10,10 @@ import java.util.StringJoiner;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @Entity
 @Table(name = "cats")
+@Builder
 public class Cat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
